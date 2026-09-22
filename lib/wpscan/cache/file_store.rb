@@ -46,6 +46,11 @@ module WPScan
 
         File.write(entry_path(key), serializer.dump(data_to_store))
         File.write(entry_expiration_path(key), Time.now.to_i + cache_ttl)
+      rescue TypeError
+        # Marshal raises TypeError("long too big to dump") for a String of 2GiB or more, which a
+        # target can produce with a single chunked response. Such an entry is not cacheable, but
+        # failing to cache it is not a reason to abort the scan.
+        nil
       end
 
       # @param [ String ] key
