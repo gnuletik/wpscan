@@ -38,45 +38,11 @@ module WPScan
     # @return [ Typhoeus::Request ]
     def forge_request(url, params = {})
       request = Typhoeus::Request.new(url, request_params(params))
-
-      cap_response_size(request)
+      # Detection reads the head of a document rather than its tail, so the cap is well above
+      # anything a finder needs. See WPScan::ResponseSizeCap
+      request.max_response_size = max_response_size.to_i * 1024 * 1024
 
       request
-    end
-
-    # Bounds how much of a response is kept in memory.
-    #
-    # libcurl's maxfilesize is not enough on its own: it acts on the advertised Content-Length,
-    # so it is a no-op against the chunked responses a dynamic site serves. Only an on_body
-    # callback can stop a transfer by how much has actually arrived.
-    #
-    # Typhoeus leaves Response#body empty once a request has on_body callbacks, so the bytes are
-    # accumulated here and put back in on_complete -- finders still get a body, just a shorter
-    # one. Detection reads the head of a document rather than its tail, so the cap is well above
-    # anything a finder needs.
-    #
-    # @param [ Typhoeus::Request ] request
-    def cap_response_size(request)
-      max_mib = max_response_size.to_i
-      # A caller doing its own streaming has its own handling; leave it alone.
-      return if max_mib.zero? || request.streaming?
-
-      max_size = max_mib * 1024 * 1024
-      body     = +''
-
-      request.on_body do |chunk, _response|
-        next :abort if body.bytesize >= max_size
-
-        body << chunk
-        nil
-      end
-
-      # Added before any on_complete a caller registers later, so it cannot clobber their
-      # handled_response.
-      request.on_complete do |response|
-        response.options[:response_body] = body
-        nil
-      end
     end
 
     # @return [ Hash ] The request params used to connect to the target as well as other systems (e.g. API).
