@@ -1,0 +1,27 @@
+[
+  {
+    "id": 3,
+    "name": "Alice",
+    "url": "",
+    "description": "",
+    "link": "http://wp.lab/author/",
+    "avatar_urls": {},
+    "meta": [],
+    "_links": {
+      "self": [{ "href": "http://wp.lab/wp-json/wp/v2/users/3" }]
+    }
+  },
+  {
+    "id": 1,
+    "name": "admin",
+    "url": "",
+    "description": "",
+    "link": "http://wp.lab/author/admin/",
+    "slug": "admin",
+    "avatar_urls": {},
+    "meta": [],
+    "_links": {
+      "self": [{ "href": "http://wp.lab/wp-json/wp/v2/users/1" }]
+    }
+  }
+]

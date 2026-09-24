@@ -46,6 +46,9 @@ module WPScan
 
           if json.is_a?(Enumerable)
             json.each do |user|
+              # Some security plugins strip the slug from the API output
+              next if user['slug'].blank?
+
               found << Model::User.new(user['slug'],
                                        id: user['id'],
                                        found_by: found_by,

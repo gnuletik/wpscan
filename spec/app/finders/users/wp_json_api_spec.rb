@@ -56,6 +56,18 @@ describe WPScan::Finders::Users::WpJsonApi do
             expect(user.interesting_entries).to eql ['http://wp.lab/wp-json/wp/v2/users/?page=1&per_page=100']
           end
         end
+
+        context 'when some users have no slug' do
+          let(:body) { File.read(fixtures.join('no_slug.json')) }
+
+          it 'ignores them' do
+            users = finder.aggressive
+
+            expect(users.size).to eql 1
+            expect(users.first.id).to eql 1
+            expect(users.first.username).to eql 'admin'
+          end
+        end
       end
     end
 
