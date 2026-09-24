@@ -22,6 +22,7 @@ doc/
 cache/
 data/
 !lib/wpscan/cache/
+!spec/lib/cache/
 
 # Profiling reports
 bin/memprof*.report
